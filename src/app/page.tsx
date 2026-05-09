@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import SearchBar from '@/components/SearchBar';
 import FacultyCard from '@/components/FacultyCard';
 import { searchFaculty, Faculty } from '@/services/faculty';
-import Link from 'next/link';
+
 
 export default function Home() {
   const [results, setResults] = useState<Faculty[]>([]);

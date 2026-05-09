@@ -24,6 +24,7 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           onError={() => setImgSrc(fallbackImage)}
+        />
       </div>
       
       <div className="flex justify-between items-start">
