@@ -10,6 +10,7 @@ export interface Faculty {
   image_url: string; // Note: In the guide we used image_url
   directions?: string; // Optional text directions for floor map
   qualifications?: string;
+  branch?: string;
 }
 
 // Helper function to map DB row to Faculty interface
@@ -24,6 +25,7 @@ function mapRowToFaculty(row: any): Faculty {
     image_url: row['image_url'] || '',
     directions: row['directions'] || '',
     qualifications: row['Qualifications'] || '',
+    branch: row['branch'] || row['Branch'] || '',
   };
 }
 
