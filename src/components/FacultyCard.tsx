@@ -39,8 +39,13 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
         {faculty.building} • Room {faculty.room}
       </div>
       
-      <div className="mt-1.5 flex items-baseline gap-1">
-        <span className="font-semibold text-slate-900 text-[15px]">Emp ID: {faculty.id}</span>
+      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <span className="font-semibold text-slate-900 text-[14px]">ID: {faculty.id}</span>
+        {faculty.branch && (
+          <span className="bg-indigo-50 text-indigo-700 text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+            {faculty.branch}
+          </span>
+        )}
       </div>
     </Link>
   );

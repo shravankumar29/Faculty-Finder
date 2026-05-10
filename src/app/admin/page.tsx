@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from 'react';
 import { Faculty, searchFaculty, addFaculty, updateFaculty, deleteFaculty } from '@/services/faculty';
 import FacultyForm from '@/components/FacultyForm';

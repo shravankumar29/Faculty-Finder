@@ -71,6 +71,15 @@ export default function SearchBar({ onSearch, suggestions = [] }: SearchBarProps
     });
   };
 
+  const removeRecentSearch = (e: React.MouseEvent, term: string) => {
+    e.stopPropagation();
+    setRecentSearches((prev) => {
+      const updated = prev.filter(s => s !== term);
+      localStorage.setItem('recentSearches', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       saveToRecent(query);
@@ -99,7 +108,7 @@ export default function SearchBar({ onSearch, suggestions = [] }: SearchBarProps
             onFocus={() => setIsFocused(true)}
             onKeyDown={handleKeyDown}
             className="w-full bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 text-sm px-2 focus:ring-0"
-            placeholder="Search faculty by name..."
+            placeholder="Search by name or staff ID..."
           />
           <div className="bg-rose-500 p-2 rounded-full text-white ml-2 flex-shrink-0">
             <svg 
@@ -142,23 +151,31 @@ export default function SearchBar({ onSearch, suggestions = [] }: SearchBarProps
       </div>
 
       {/* Recent Searches */}
-      {recentSearches.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-3 pl-1">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Recent:</span>
           {recentSearches.map((term, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                setQuery(term);
-                setIsFocused(true);
-              }}
-              className="text-xs bg-white hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 px-3 py-1 rounded-full transition-colors border border-slate-200 shadow-sm"
-            >
-              {term}
-            </button>
+            <div key={i} className="group flex items-center bg-white hover:bg-indigo-50 border border-slate-200 rounded-full transition-colors shadow-sm overflow-hidden">
+              <button
+                onClick={() => {
+                  setQuery(term);
+                  setIsFocused(true);
+                }}
+                className="text-xs text-slate-600 hover:text-indigo-600 px-3 py-1 pr-1"
+              >
+                {term}
+              </button>
+              <button
+                onClick={(e) => removeRecentSearch(e, term)}
+                className="p-1 pr-2 text-slate-300 hover:text-red-500 transition-colors"
+                title="Remove search"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           ))}
         </div>
-      )}
     </div>
   );
 }

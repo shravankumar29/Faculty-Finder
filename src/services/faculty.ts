@@ -16,15 +16,15 @@ export interface Faculty {
 // Helper function to map DB row to Faculty interface
 function mapRowToFaculty(row: any): Faculty {
   return {
-    id: row['Employee ID']?.toString() || Math.random().toString(),
-    name: row['Staff Name'] || '',
-    department: row['Designation'] || '',
+    id: (row['Employee ID'] || row['employee_id'] || row['id'])?.toString() || Math.random().toString(),
+    name: row['Staff Name'] || row['staff_name'] || row['name'] || '',
+    department: row['Designation'] || row['designation'] || row['department'] || '',
     room: row['room'] || '',
     floor: row['floor'] || '',
     building: row['building'] || '',
     image_url: row['image_url'] || '',
     directions: row['directions'] || '',
-    qualifications: row['Qualifications'] || '',
+    qualifications: row['Qualifications'] || row['qualifications'] || '',
     branch: row['branch'] || row['Branch'] || '',
   };
 }
@@ -48,20 +48,42 @@ export async function searchFaculty(query: string): Promise<Faculty[]> {
   }
   
   const lowerCaseQuery = query.toLowerCase().trim();
-  
-  // Use Supabase's ilike filter for case-insensitive search on Staff Name
-  const { data, error } = await supabase
-    .from('faculty')
-    .select('*')
-    .ilike('Staff Name', `%${lowerCaseQuery}%`)
-    .order('Staff Name');
 
-  if (error) {
-    console.error('Error searching faculty:', error);
-    throw new Error(error.message);
+  try {
+    // 1. Fetch all faculty (or a large enough subset) to perform client-side filtering
+    // This is the most robust way to handle partial matching on numeric IDs
+    const { data: allFaculty, error } = await supabase
+      .from('faculty')
+      .select('*')
+      .order('Staff Name');
+
+    if (error) throw error;
+
+    if (allFaculty && allFaculty.length > 0) {
+      // Diagnostic: Log the keys of the first row to ensure we have the right column names
+      console.log('Database Row Keys:', Object.keys(allFaculty[0]));
+    }
+
+    // Filter by name OR ID in JavaScript
+    const filtered = (allFaculty || []).filter(item => {
+      const name = (item['Staff Name'] || '').toString().toLowerCase();
+      const id = (item['Employee ID'] || '').toString();
+      
+      return name.includes(lowerCaseQuery) || id.includes(lowerCaseQuery);
+    });
+
+    return filtered.map(mapRowToFaculty);
+  } catch (err) {
+    console.error('Advanced search failed, falling back to basic name search:', err);
+    // Ultimate fallback
+    const { data } = await supabase
+      .from('faculty')
+      .select('*')
+      .ilike('Staff Name', `%${lowerCaseQuery}%`)
+      .order('Staff Name');
+    
+    return (data || []).map(mapRowToFaculty);
   }
-  
-  return (data || []).map(mapRowToFaculty);
 }
 
 /**

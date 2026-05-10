@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -62,7 +64,7 @@ export default async function FacultyProfilePage({ params }: PageProps) {
                 {faculty.name}
               </h1>
               <p className="text-lg text-indigo-600 font-medium mt-1">
-                {faculty.department}
+                {faculty.department} {faculty.branch && <span className="text-slate-400 mx-2">•</span>} {faculty.branch}
               </p>
               {faculty.qualifications && (
                 <p className="text-md text-slate-600 mt-2">
